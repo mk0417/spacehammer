@@ -1,19 +1,7 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 (local hyper (require :lib.hyper))
-(local {:contains? contains?
-        :map       map
-        :split     split}
+(local {: contains?
+        : map
+        : split}
        (require :lib.functional))
 
 (local log (hs.logger.new "bind.fnl" "debug"))
@@ -33,8 +21,10 @@
     (if f
         (f (table.unpack (or args [])))
         (do
-          (log.wf "Could not invoke action %s"
-                  action)))))
+          (log.wf "Could not dispatch action %s: Function \"%s\" was not found in module \"%s\".\nEnsure the correct action is referenced in config.fnl."
+                  action
+                  fn-name
+                  file)))))
 
 
 (fn create-action-fn
@@ -102,7 +92,7 @@
   Binds keys to actions globally like pressing cmd + space to open modal menu
   Takes a list of bindings from config.fnl
   Performs side-effect of creating the key binding to a function.
-  Returns a function to unbding keys.
+  Returns a function to unbind keys.
   "
   (map
    (fn [item]

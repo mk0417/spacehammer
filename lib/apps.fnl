@@ -1,15 +1,3 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 "
 Creates a finite state machine to handle app-specific events.
 A user may specify app-specific key bindings or menu items in their config.fnl
@@ -22,19 +10,10 @@ This module works mechanically similar to lib/modal.fnl.
 (local atom (require :lib.atom))
 (local statemachine (require :lib.statemachine))
 (local os (require :os))
-(local {:call-when call-when
-        :concat    concat
-        :find      find
-        :filter    filter
-        :get       get
-        :has-some? has-some?
-        :join      join
-        :last      last
-        :map       map
-        :merge     merge
-        :noop      noop
-        :slice     slice
-        :tap       tap}
+(local {: call-when
+        : find
+        : noop
+        : tap}
        (require :lib.functional))
 (local {:action->fn action->fn
         :bind-keys bind-keys}

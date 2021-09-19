@@ -1,17 +1,5 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
-
 (require-macros :lib.macros)
+(require-macros :lib.advice.macros)
 (local windows (require :windows))
 (local emacs (require :emacs))
 (local slack (require :slack))
@@ -240,7 +228,7 @@
           :action "windows:show-grid"}
          {:key :u
           :title "Undo"
-          :action "windows:undo-action"}]))
+          :action "windows:undo"}]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Apps Menu
@@ -484,7 +472,8 @@
         :enter (fn [] (windows.hide-display-numbers))
         :exit  (fn [] (windows.hide-display-numbers))
         :apps  apps
-        :hyper {:key :F18}})
+        :hyper {:key :F18}
+        :modules {:windows {:center-ratio "80:50"}}})
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

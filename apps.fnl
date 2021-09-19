@@ -1,30 +1,30 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
-(local {:global-filter global-filter} (require :lib.utils))
+(local {: global-filter} (require :lib.utils))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; App switcher
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(global switcher
-       (hs.window.switcher.new
-        (global-filter)
-        {:textSize 12
-         :showTitles false
-         :showThumbnails false
-         :showSelectedTitle false
-         :selectedThumbnailSize 800
-         :backgroundColor [0 0 0 0]}))
+(fn calc-thumbnail-size
+  []
+  "
+  Calculates the height of thumbnail in pixels based on the screen size
+  @TODO Make this advisable when #102 lands
+  "
+  (let [screen (hs.screen.mainScreen)
+        {: h} (: screen :currentMode)]
+    (/ h 2)))
+
+(fn init
+  [config]
+  (global switcher
+          (hs.window.switcher.new
+           (or (?. config :modules :switcher :filter) (global-filter))
+           {:textSize 12
+            :showTitles false
+            :showThumbnails false
+            :showSelectedTitle false
+            :selectedThumbnailSize (calc-thumbnail-size)
+            :backgroundColor [0 0 0 0]})))
 
 (fn prev-app
   []
@@ -50,5 +50,6 @@
 ;; Exports
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-{:prev-app                prev-app
- :next-app                next-app}
+{: init
+ : prev-app
+ : next-app}

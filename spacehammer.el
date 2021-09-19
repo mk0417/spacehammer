@@ -1,17 +1,3 @@
-;; spacehammer.el - Auxiliary Emacs helpers to be used with Spacehammer
-;;
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 (defun spacehammer/alert (message)
   "shows Hammerspoon's hs.alert popup with a MESSAGE"
   (when (and message (eq system-type 'darwin))
@@ -75,6 +61,18 @@ DIRECTION - can be North, South, West, East"
     - pid         - PID of the app that invoked Edit-with-Emacs
     - title       - title of the app that invoked Edit-with-Emacs")
 
+(defvar spacehammer/before-finish-edit-with-emacs-hook nil
+  "Hook for when edit-with-emacs is finished and dedicated buffer and frame are about to get killed.
+   Hook function must accept arguments:
+    - buffer-name - the name of the edit buffer
+    - pid         - PID of the app that invoked Edit-with-Emacs")
+
+(defvar spacehammer/before-cancel-edit-with-emacs-hook nil
+  "Hook for when edit-with-emacs is canceled and dedicated buffer and frame are about to get killed.
+   Hook function must accept arguments:
+    - buffer-name - the name of the edit buffer
+    - pid         - PID of the app that invoked Edit-with-Emacs")
+
 (defun spacehammer/edit-with-emacs (&optional pid title screen)
   "Edit anything with Emacs
 
@@ -116,6 +114,11 @@ TITLE is a title of the window (the caller is responsible to set that right)"
 
 (defun spacehammer/finish-edit-with-emacs ()
   (interactive)
+  (run-hook-with-args
+   'spacehammer/before-finish-edit-with-emacs-hook
+   (buffer-name (current-buffer))
+   systemwide-edit-previous-app-pid)
+
   (clipboard-kill-ring-save (point-min) (point-max))
   (kill-buffer)
   (delete-frame)
@@ -125,6 +128,11 @@ TITLE is a title of the window (the caller is responsible to set that right)"
 
 (defun spacehammer/cancel-edit-with-emacs ()
   (interactive)
+  (run-hook-with-args
+   'spacehammer/before-cancel-edit-with-emacs-hook
+   (buffer-name (current-buffer))
+   systemwide-edit-previous-app-pid)
+
   (kill-buffer)
   (delete-frame)
   (spacehammer/switch-to-app systemwide-edit-previous-app-pid)

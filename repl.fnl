@@ -1,12 +1,3 @@
-;; Copyright (c) 2017-2021 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 (local coroutine (require :coroutine))
 (local fennel (require :fennel))
 (local jeejah (require :jeejah))
@@ -28,6 +19,7 @@
 ;;   (repl.run (repl.start))
 ;;
 ;; repl.start takes an optional 'opts' table with the following fields:
+;; - host: Define the host to listen on (default "localhost")
 ;; - port: Define the port to listen on (default 7888)
 ;; - fennel: Expect fennel code (as opposed to lua) (default true)
 ;; - serialize: Provide a function that converts objects to strings
@@ -43,7 +35,7 @@
                                   (: :read "*all")
                                   (: :gsub "^#![^\n]*\n" "")))
                   (: f :close))
-    (f msg)))
+    _ (f msg)))
 
 (local default-opts
        {:port nil
@@ -63,13 +55,13 @@
 (fn start
   [custom-opts]
   (let [opts (merge {} default-opts custom-opts)
-        server (jeejah.start (. opts :port) opts)]
+        server (jeejah.start opts.port opts)]
     server))
 
 (fn stop
   [server]
   (jeejah.stop server))
 
-{:run run
- :start start
- :stop stop}
+{: run
+ : start
+ : stop}

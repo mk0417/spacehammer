@@ -1,18 +1,7 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 (local atom (require :lib.atom))
-(local {:filter filter
-        :logf logf
-        :map map
-        :merge merge
-        :tap tap} (require :lib.functional))
+(local {: filter
+        : map
+        : merge} (require :lib.functional))
 
 (local log (hs.logger.new "\tstatemachine.fnl\t" "debug"))
 

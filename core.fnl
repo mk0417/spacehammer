@@ -1,19 +1,7 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Ag Ibragimov <agzam.ibragimov@gmail.com>
-;;
-;;; Contributors:
-;;   Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
-
 (hs.ipc.cliInstall) ; ensure CLI installed
 
 (local fennel (require :fennel))
+(require :lib.globals)
 (local {:contains? contains?
         :for-each  for-each
         :map       map
@@ -21,7 +9,15 @@
         :reduce    reduce
         :split     split
         :some      some} (require :lib.functional))
+(local atom (require :lib.atom))
 (require-macros :lib.macros)
+(require-macros :lib.advice.macros)
+
+;; Add compatability with spoons as the spoon global may not exist at
+;; this point until a spoon is loaded. It will exist if a spoon is
+;; loaded from init.lua
+
+(global spoon (or _G.spoon {}))
 
 ;; Make ~/.spacehammer folder override repo files
 (local homedir (os.getenv "HOME"))
@@ -46,12 +42,30 @@ Shortcut for showing an alert on the primary screen for a specified duration
 Takes a message string, a style table, and the number of seconds to show alert
 Returns nil. This function causes side-effects.
 "
-(global alert (fn [str style seconds]
-                (hs.alert.show str
-                               style
-                               (hs.screen.primaryScreen)
-                               seconds)))
+(global alert
+        (afn
+         alert
+         [str style seconds]
+         "
+         Global alert function used for spacehammer modals and reload
+         alerts after config reloads
+         "
+         (hs.alert.show str
+                        style
+                        (hs.screen.primaryScreen)
+                        seconds)))
+
 (global fw hs.window.focusedWindow)
+
+(global pprint (fn [x] (print (fennel.view x))))
+
+(global get-config
+        (afn get-config
+          []
+          "
+          Returns the global config object, or error if called early
+          "
+          (error "get-config can only be called after all modules have initialized")))
 
 (fn file-exists?
   [filepath]
@@ -115,8 +129,11 @@ Returns nil. This function causes side-effects.
   Returns true if file extension ends in .fnl or .lua
   "
   (let [ext (split "%p" file)]
-    (or (contains? "fnl" ext)
-        (contains? "lua" ext))))
+    (and
+     (or (contains? "fnl" ext)
+         (contains? "lua" ext))
+     (not (string.match file "-test%..*$")))))
+
 
 (fn source-updated?
   [file]
@@ -199,9 +216,16 @@ Returns nil. This function causes side-effects.
 (local modules [:lib.hyper
                 :vim
                 :windows
+                :apps
                 :lib.bind
                 :lib.modal
                 :lib.apps])
+
+(defadvice get-config-impl
+           []
+           :override get-config
+           "Returns global config obj"
+           config)
 
 ;; Create a global reference so services like hs.application.watcher
 ;; do not get garbage collected.
@@ -211,3 +235,4 @@ Returns nil. This function causes side-effects.
                     (let [module (require path)]
                       {path (module.init config)})))
              (reduce #(merge $1 $2) {})))
+

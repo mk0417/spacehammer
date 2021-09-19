@@ -1,12 +1,3 @@
-;; Copyright (c) 2017-2020 Ag Ibragimov & Contributors
-;;
-;;; Author: Jay Zawrotny <jayzawrotny@gmail.com>
-;;
-;;; URL: https://github.com/agzam/spacehammer
-;;
-;;; License: MIT
-;;
-
 "
 Displays the menu modals, sub-menus, and application-specific modals if set
 in config.fnl.
@@ -21,20 +12,17 @@ switching menus in one place which is then powered by config.fnl.
 (local atom (require :lib.atom))
 (local statemachine (require :lib.statemachine))
 (local apps (require :lib.apps))
-(local {:call-when call-when
-        :concat    concat
-        :find      find
-        :filter    filter
-        :get       get
-        :has-some? has-some?
-        :identity  identity
-        :join      join
-        :last      last
-        :map       map
-        :merge     merge
-        :noop      noop
-        :slice     slice
-        :tap       tap}
+(local {: call-when
+        : concat
+        : find
+        : filter
+        : has-some?
+        : identity
+        : join
+        : map
+        : merge
+        : noop
+        : slice}
        (require :lib.functional))
 (local {:align-columns align-columns}
        (require :lib.text))
